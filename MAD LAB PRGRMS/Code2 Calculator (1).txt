@@ -1,0 +1,98 @@
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.view.View
+import android.widget.Button
+import android.widget.TextView
+
+class MainActivity : AppCompatActivity(), View.OnClickListener {
+
+    private lateinit var calculatorDisplay: TextView
+    private var operand1: Double = 0.0
+    private var operand2: Double = 0.0
+    private var operator: String = ""
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        calculatorDisplay = findViewById(R.id.calculator_display)
+
+        val button0: Button = findViewById(R.id.button_0)
+        val button1: Button = findViewById(R.id.button_1)
+        val button2: Button = findViewById(R.id.button_2)
+        val button3: Button = findViewById(R.id.button_3)
+        val button4: Button = findViewById(R.id.button_4)
+        val button5: Button = findViewById(R.id.button_5)
+        val button6: Button = findViewById(R.id.button_6)
+        val button7: Button = findViewById(R.id.button_7)
+        val button8: Button = findViewById(R.id.button_8)
+        val button9: Button = findViewById(R.id.button_9)
+        val buttonDot: Button = findViewById(R.id.button_dot)
+        val buttonClear: Button = findViewById(R.id.button_clear)
+        val buttonEquals: Button = findViewById(R.id.button_equals)
+        val buttonPlus: Button = findViewById(R.id.button_plus)
+        val buttonMinus: Button = findViewById(R.id.button_minus)
+        val buttonMultiply: Button = findViewById(R.id.button_multiply)
+        val buttonDivide: Button = findViewById(R.id.button_divide)
+
+        val buttons = listOf<Button>(
+            button0, button1, button2, button3, button4, button5, button6, button7, button8,
+            button9, buttonDot, buttonClear, buttonEquals, buttonPlus, buttonMinus, buttonMultiply, buttonDivide
+        )
+
+        for (button in buttons) {
+            button.setOnClickListener(this)
+        }
+    }
+
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            R.id.button_0 -> appendNumber("0")
+            R.id.button_1 -> appendNumber("1")
+            R.id.button_2 -> appendNumber("2")
+            R.id.button_3 -> appendNumber("3")
+            R.id.button_4 -> appendNumber("4")
+            R.id.button_5 -> appendNumber("5")
+            R.id.button_6 -> appendNumber("6")
+            R.id.button_7 -> appendNumber("7")
+            R.id.button_8 -> appendNumber("8")
+            R.id.button_9 -> appendNumber("9")
+            R.id.button_dot -> appendNumber(".")
+            R.id.button_plus -> setOperator("+")
+            R.id.button_minus -> setOperator("-")
+            R.id.button_multiply -> setOperator("*")
+            R.id.button_divide -> setOperator("/")
+            R.id.button_equals -> calculateResult()
+            R.id.button_clear -> clearCalculator()
+        }
+    }
+
+    private fun appendNumber(number: String) {
+        calculatorDisplay.append(number)
+    }
+
+    private fun setOperator(op: String) {
+        operand1 = calculatorDisplay.text.toString().toDouble()
+        operator = op
+        calculatorDisplay.text = ""
+    }
+
+    private fun calculateResult() {
+        operand2 = calculatorDisplay.text.toString().toDouble()
+        val result = when (operator) {
+            "+" -> operand1 + operand2
+            "-" -> operand1 - operand2
+            "*" -> operand1 * operand2
+            "/" -> operand1 / operand2
+            else -> 0.0
+        }
+        calculatorDisplay.text = result.toString()
+    }
+
+    private fun clearCalculator() {
+        calculatorDisplay.text = ""
+        operand1 = 0.0
+        operand2 = 0.0
+        operator = ""
+    }
+}

@@ -1,0 +1,300 @@
+1.visiting card
+
+/* MainActivity.kt */
+
+import android.content.Intent
+import android.graphics.Color
+import android.net.Uri
+import android.os.Bundle
+import android.provider.MediaStore
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.app.AppCompatDelegate
+import kotlinx.android.synthetic.main.activity_main.*
+
+class MainActivity : AppCompatActivity() {
+    // Variables to store selected image URI and request code
+    private var img: Uri? = null
+    private var pickImg = 100
+
+    // The activity's entry point
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        // Set the default night mode to NO for the app (light theme)
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+
+        // Call the setViews() function to set button click handlers
+        setViews()
+    }
+
+    // Button handler functions
+    private fun setViews() {
+        // Set a click listener for the logoBtn
+        logoBtn.setOnClickListener { pickImage() }
+
+        // Set a click listener for the genBtn
+        genBtn.setOnClickListener { setTextViews() }
+    }
+
+    // Function to set text views with the entered data
+    private fun setTextViews() {
+        // Retrieve data from the EditText views
+        val cName = cName.getText()
+        val pName = pName.getText()
+        val pJob = pJob.getText()
+        val pPhone = pPhone.getText()
+        val pAddress = pAddress.getText()
+        val pMail = pMail.getText()
+
+        // Update the TextViews with the entered data
+        cNameView.text = cName
+        pNameView.text = pName
+        pJobView.text = pJob
+        pAddressView.text = pAddress
+        pMailView.text = pMail
+        pPhoneView.text = pPhone
+
+        // Set the lineView background color to black
+        lineView.setBackgroundColor(Color.BLACK)
+
+        // Set the cLogoView to display the selected image
+        cLogoView.setImageURI(img)
+    }
+
+    // Function to open the gallery to pick an image
+    private fun pickImage() {
+        // Create an Intent to pick an image from the gallery
+        val pic = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+
+        // Start the activity with the pickImg request code
+        startActivityForResult(pic, pickImg)
+    }
+
+    // Function to handle the result of the image pick
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        // Check if the result is okay and matches the pickImg request code
+        if (resultCode == RESULT_OK && requestCode == pickImg) {
+            // Store the selected image URI in the img variable
+            img = data?.data
+        }
+    }
+}
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+7.TTS
+
+package com.example.spootts
+
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.speech.tts.TextToSpeech
+import android.util.Log
+import java.util.*
+import kotlinx.android.synthetic.main.activity_main.*
+
+class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
+    private var textToSpeech: TextToSpeech? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        // Disable the textToSpeechButton initially until TextToSpeech is initialized
+        textToSpeechButton.isEnabled = false
+
+        // Initialize the TextToSpeech engine with this activity as the listener
+        textToSpeech = TextToSpeech(this, this)
+
+        // Set a click listener for the textToSpeechButton
+        textToSpeechButton.setOnClickListener {
+            // Call the convertToSpeech function to convert the entered text to speech
+            convertToSpeech()
+        }
+    }
+
+    // This function is called when TextToSpeech engine initialization is complete
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            // Set the language of TextToSpeech to US English
+            val result = textToSpeech?.setLanguage(Locale.US)
+
+            // Check if the language is supported, and enable the textToSpeechButton
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "Language specified NOT SUPPORTED")
+            } else {
+                textToSpeechButton.isEnabled = true
+            }
+        } else {
+            Log.e("TTS", "Initialization Failed")
+        }
+    }
+
+    // Function to convert the entered text to speech
+    private fun convertToSpeech() {
+        val text = textInput.text.toString()
+        // Speak the text using TextToSpeech engine with QUEUE_FLUSH (clear the queue) and null parameters
+        textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+    }
+
+}
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+4.CHANGE WALLPAPER
+
+\* Wallpaper MainActivity.kt File*\
+import android.app.WallpaperManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.os.Bundle
+import android.os.Handler
+import androidx.appcompat.app.AppCompatActivity
+import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_main.*
+
+class MainActivity : AppCompatActivity() 
+{
+    var myWallpaperList = arrayOf(R.drawable.wallpaper4,R.drawable.wallpaper2,R.drawable.wallpaper3,R.drawable.wallpaper5,R.drawable.wallpaper1)
+    override fun onCreate(savedInstanceState: Bundle?) 
+    {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        WPBtn.setOnClickListener 
+        { 
+            setWallpaper() 
+        }
+    }
+    private fun setWallpaper() 
+    {
+        Toast.makeText(this, "Setting Wallpaper please wait.", Toast.LENGTH_SHORT).show()
+        Handler().postDelayed({
+            for(i in myWallpaperList) 
+            {
+                val pic: Bitmap = BitmapFactory.decodeResource(resources, i)
+                val wM = WallpaperManager.getInstance(baseContext)
+                wM.setBitmap(pic)
+            }
+        }, 2000)
+    }
+}
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+5.COUNTER
+
+//import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.os.CountDownTimer
+import android.support.v7.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_main.*
+
+class MainActivity : AppCompatActivity() 
+{
+    private val timer = MyCounter(10000000000, 1000)
+    var countervalue: Int = 0
+    override fun onCreate(savedInstanceState: Bundle?) 
+    {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        startBtn.setOnClickListener 
+        {
+            timer.start()
+            startBtn.isEnabled = false
+        }
+        stopBtn.setOnClickListener 
+        {
+            timer.cancel()
+            startBtn.isEnabled = true
+        }
+    }
+    inner class MyCounter(millisInFuture: Long, countDownInterval: Long) : CountDownTimer(millisInFuture, countDownInterval) 
+    {
+        override fun onFinish() 
+        {
+        }
+        override fun onTick(millisUntilFinished: Long) 
+        {
+            countervalue++
+            viewNumber.text = (countervalue).toString()
+        }
+    }
+}
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+8.DIALER
+
+/* MainActivity.kt */
+
+package com.example.dialer2
+
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import android.provider.ContactsContract
+import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_main.*
+
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        // Set click listeners for number buttons (0-9), star (*), and hash (#)
+        zero.setOnClickListener { pressButton("0", true) }
+        one.setOnClickListener { pressButton("1", true) }
+        two.setOnClickListener { pressButton("2", true) }
+        three.setOnClickListener { pressButton("3", true) }
+        four.setOnClickListener { pressButton("4", true) }
+        five.setOnClickListener { pressButton("5", true) }
+        six.setOnClickListener { pressButton("6", true) }
+        seven.setOnClickListener { pressButton("7", true) }
+        eight.setOnClickListener { pressButton("8", true) }
+        nine.setOnClickListener { pressButton("9", true) }
+        star.setOnClickListener { pressButton("*", true) }
+        hash.setOnClickListener { pressButton("#", true) }
+
+        // Set click listeners for "Clear" button, "Call" button, and "Save" button
+        clear.setOnClickListener {
+            contact.text = ""
+        }
+
+        call.setOnClickListener {
+            // Create an intent to open the dialer with the entered phone number
+            val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + "${contact.text}"))
+            startActivity(intent)
+        }
+
+        save.setOnClickListener {
+            // Create an intent to show or create a contact with the entered phone number
+            val intent = Intent(ContactsContract.Intents.SHOW_OR_CREATE_CONTACT, Uri.parse("tel:" + contact.text))
+            // Add an extra flag to force creating a new contact if it doesn't exist
+            intent.putExtra(ContactsContract.Intents.EXTRA_FORCE_CREATE, true)
+            startActivity(intent)
+        }
+    }
+
+    private fun pressButton(string: String, clear: Boolean) {
+        if (!clear) {
+            // Clear the contact TextView if clear is true
+            contact.text = ""
+        } else {
+            // Append the pressed button's string to the contact TextView
+            contact.append(string)
+        }
+    }
+}
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
